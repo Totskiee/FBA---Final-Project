@@ -119,20 +119,17 @@ async function initDescriptiveDashboard() {
 // -------------------------------------------------------------
 async function initPredictiveForm() {
   try {
-    const [whData, hubData, prodData] = await Promise.all([
-      API.getTableRows('warehouses', 30),
-      API.getTableRows('customer_hubs', 30),
-      API.getTableRows('motor_products', 30)
-    ]);
+    const options = await API.getPredictiveOptions();
+    if (!options || !options.success) return;
 
     const whSelect = document.getElementById('pred-warehouse');
-    whSelect.innerHTML = whData.data.map(w => `<option value="${w.warehouse_id}">${w.warehouse_name} (${w.city}, ${w.state})</option>`).join('');
+    whSelect.innerHTML = options.warehouses.map(w => `<option value="${w.warehouse_id}">${w.warehouse_name} (${w.city}, ${w.state})</option>`).join('');
 
     const hubSelect = document.getElementById('pred-hub');
-    hubSelect.innerHTML = hubData.data.map(h => `<option value="${h.hub_id}">${h.hub_name} (${h.city})</option>`).join('');
+    hubSelect.innerHTML = options.hubs.map(h => `<option value="${h.hub_id}">${h.hub_name} (${h.city})</option>`).join('');
 
     const prodSelect = document.getElementById('pred-product');
-    prodSelect.innerHTML = prodData.data.map(p => `<option value="${p.product_id}">${p.model_name} [${p.weight_kg} kg]</option>`).join('');
+    prodSelect.innerHTML = options.products.map(p => `<option value="${p.product_id}">${p.model_name} [${p.weight_kg} kg]</option>`).join('');
 
     calculatePrediction();
   } catch (err) {
@@ -184,9 +181,18 @@ async function initPrescriptiveDashboard() {
 
     // Populate Matrix Table
     const tbody = document.getElementById('matrix-tbody');
+    const thead = document.getElementById('matrix-thead');
     tbody.innerHTML = '';
 
     const { origins, destinations, optimalAllocation, unitCosts } = data;
+
+    if (thead) {
+      thead.innerHTML = `<tr class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+        <th class="p-3 text-left">Origin Warehouse</th>
+        ${destinations.map(d => `<th class="p-3">${d.name}<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: ${d.demand}</span></th>`).join('')}
+        <th class="p-3 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">Total Supply</th>
+      </tr>`;
+    }
 
     origins.forEach((orig, i) => {
       let rowHtml = `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
@@ -248,7 +254,7 @@ async function loadTable(tableName) {
   });
 
   try {
-    const result = await API.getTableRows(tableName, 100);
+    const result = await API.getTableRows(tableName, 500);
     if (result.locked) {
       lockDatabase();
       return;

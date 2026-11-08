@@ -60,6 +60,10 @@ const API = {
     return this._fetch('/api/descriptive/summary');
   },
 
+  async getPredictiveOptions() {
+    return this._fetch('/api/predictive/options');
+  },
+
   async getPredictiveEstimate(payload) {
     return this._fetch('/api/predictive/estimate', {
       method: 'POST',
@@ -79,7 +83,7 @@ const API = {
     return this._fetch('/api/db/tables');
   },
 
-  async getTableRows(tableName, limit = 100) {
+  async getTableRows(tableName, limit = 500) {
     return this._fetch(`/api/db/${tableName}?limit=${limit}`);
   },
 

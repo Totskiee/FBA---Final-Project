@@ -31,9 +31,9 @@ exports.getTableData = (req, res) => {
   }
 
   try {
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 500;
     const pk = PRIMARY_KEYS[tableName];
-    const rows = db.prepare(`SELECT * FROM ${tableName} ORDER BY ${pk} DESC LIMIT ?`).all(limit);
+    const rows = db.prepare(`SELECT * FROM ${tableName} ORDER BY ${pk} ASC LIMIT ?`).all(limit);
     res.json({ success: true, table: tableName, primaryKey: pk, count: rows.length, data: rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
