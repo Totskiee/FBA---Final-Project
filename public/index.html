@@ -86,12 +86,6 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center space-x-3">
-        <!-- Admin Sign In Link -->
-        <a href="/login" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-          <i class="fa-solid fa-lock text-[10px]"></i>
-          <span>Admin Portal</span>
-        </a>
-
         <!-- Theme Toggle -->
         <button onclick="toggleTheme()" id="theme-toggle-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 transition cursor-pointer" title="Toggle Theme">
           <i id="theme-toggle-icon" class="fa-solid fa-moon"></i>
@@ -99,9 +93,8 @@
 
         <!-- Redirect to Dashboard Button -->
         <a href="/dashboard" class="relative group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-md shadow-sky-600/30 hover:shadow-sky-600/50 transition-all hover:scale-[1.02] active:scale-[0.98]">
-          <i class="fa-solid fa-gauge text-[11px]"></i>
           <span>Launch Dashboard</span>
-          <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+          <i class="fa-solid fa-arrow-right text-[11px] group-hover:translate-x-1 transition-transform"></i>
         </a>
       </div>
     </div>
@@ -455,8 +448,7 @@
         <span>Business Analytics Final Project</span>
       </div>
       <div class="flex items-center space-x-4">
-        <a href="/login" class="hover:text-sky-600 dark:hover:text-sky-400 transition">Admin Sign In</a>
-        <a href="/dashboard" class="hover:text-sky-600 dark:hover:text-sky-400 transition">Dashboard</a>
+        <a href="/dashboard" class="hover:text-sky-600 dark:hover:text-sky-400 transition">Analytics Dashboard</a>
         <a href="#techstack" class="hover:text-sky-600 dark:hover:text-sky-400 transition">Tech Stack</a>
       </div>
     </div>

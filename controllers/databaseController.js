@@ -1,4 +1,5 @@
 const { db } = require('../config/database');
+const { verifyPin, createPinToken } = require('../services/pinService');
 
 const ALLOWED_TABLES = ['warehouses', 'customer_hubs', 'motor_products', 'carriers_routes', 'shipment_transactions'];
 
@@ -92,4 +93,21 @@ exports.deleteRecord = (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+};
+
+exports.verifyPin = (req, res) => {
+  const { pin } = req.body || {};
+  if (!verifyPin(pin)) {
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid security PIN / passkey. Database remains locked.'
+    });
+  }
+
+  const token = createPinToken();
+  res.json({
+    success: true,
+    message: 'Passkey verified successfully. Access granted to database entities.',
+    token
+  });
 };

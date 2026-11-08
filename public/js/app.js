@@ -9,7 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initDescriptiveDashboard();
   initPredictiveForm();
   initPrescriptiveDashboard();
-  loadTable('warehouses');
+  initDatabaseLockState();
+  if (API.isDbUnlocked()) {
+    loadTable('warehouses');
+  }
 });
 
 // -------------------------------------------------------------
@@ -70,6 +73,18 @@ function switchTab(tabName) {
 
   if (tabName === 'descriptive') {
     ChartManager.resizeAll();
+  }
+
+  if (tabName === 'database') {
+    initDatabaseLockState();
+    if (API.isDbUnlocked()) {
+      loadTable(currentTable || 'warehouses');
+    } else {
+      setTimeout(() => {
+        const pinInput = document.getElementById('db-pin-input');
+        if (pinInput) pinInput.focus();
+      }, 100);
+    }
   }
 }
 
@@ -217,6 +232,11 @@ async function initPrescriptiveDashboard() {
 // 4. DATABASE CRUD MANAGEMENT
 // -------------------------------------------------------------
 async function loadTable(tableName) {
+  if (!API.isDbUnlocked()) {
+    initDatabaseLockState();
+    return;
+  }
+
   currentTable = tableName;
 
   document.querySelectorAll('.table-btn').forEach(btn => {
@@ -229,6 +249,10 @@ async function loadTable(tableName) {
 
   try {
     const result = await API.getTableRows(tableName, 100);
+    if (result.locked) {
+      lockDatabase();
+      return;
+    }
     if (!result.success) return;
 
     currentPrimaryKey = result.primaryKey || Object.keys(result.data[0])[0];
@@ -418,18 +442,83 @@ async function deleteRecordPrompt(recordId) {
 }
 
 // -------------------------------------------------------------
-// ADMIN LOGOUT HANDLER
+// DATABASE PASSKEY / PIN SECURITY CONTROLS
 // -------------------------------------------------------------
-async function handleLogout() {
-  if (!confirm('Are you sure you want to log out of the Admin Dashboard?')) {
-    return;
+function initDatabaseLockState() {
+  const lockScreen = document.getElementById('db-lock-screen');
+  const unlockedScreen = document.getElementById('db-unlocked-screen');
+  if (!lockScreen || !unlockedScreen) return;
+
+  if (API.isDbUnlocked()) {
+    lockScreen.classList.add('hidden');
+    unlockedScreen.classList.remove('hidden');
+  } else {
+    lockScreen.classList.remove('hidden');
+    unlockedScreen.classList.add('hidden');
   }
+}
+
+function togglePinVisibility() {
+  const pinInput = document.getElementById('db-pin-input');
+  const icon = document.getElementById('db-pin-toggle-icon');
+  if (!pinInput) return;
+  if (pinInput.type === 'password') {
+    pinInput.type = 'text';
+    if (icon) icon.className = 'fa-solid fa-eye-slash text-xs';
+  } else {
+    pinInput.type = 'password';
+    if (icon) icon.className = 'fa-solid fa-eye text-xs';
+  }
+}
+
+function fillDemoPin() {
+  const pinInput = document.getElementById('db-pin-input');
+  if (pinInput) {
+    pinInput.value = '2026';
+    const err = document.getElementById('db-pin-error');
+    if (err) err.classList.add('hidden');
+  }
+}
+
+async function submitDbPin() {
+  const pinInput = document.getElementById('db-pin-input');
+  const errDiv = document.getElementById('db-pin-error');
+  const errMsg = document.getElementById('db-pin-error-msg');
+  const btn = document.getElementById('db-pin-submit-btn');
+  const btnText = document.getElementById('db-pin-btn-text');
+
+  if (!pinInput || !pinInput.value.trim()) return;
+
+  if (errDiv) errDiv.classList.add('hidden');
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.innerText = 'Verifying Passkey...';
 
   try {
-    const response = await fetch('/api/auth/logout', { method: 'POST' });
-    const data = await response.json();
-    window.location.href = data.redirect || '/login';
+    const res = await API.verifyDbPin(pinInput.value.trim());
+    if (res.success) {
+      pinInput.value = '';
+      initDatabaseLockState();
+      loadTable(currentTable || 'warehouses');
+    } else {
+      if (errDiv) {
+        if (errMsg) errMsg.innerText = res.error || 'Invalid security PIN / passkey.';
+        errDiv.classList.remove('hidden');
+      }
+    }
   } catch (err) {
-    window.location.href = '/login';
+    if (errDiv) {
+      if (errMsg) errMsg.innerText = 'Verification failed: ' + err.message;
+      errDiv.classList.remove('hidden');
+    }
+  } finally {
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.innerText = 'Unlock Database Tab';
   }
+}
+
+function lockDatabase() {
+  API.clearDbToken();
+  initDatabaseLockState();
+  const pinInput = document.getElementById('db-pin-input');
+  if (pinInput) pinInput.value = '';
 }

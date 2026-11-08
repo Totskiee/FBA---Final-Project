@@ -25,19 +25,16 @@ This platform addresses the freight overhead dilemma by combining:
 
 - **Modern Responsive UI / UX:**
   - Dedicated **Company Landing Page** (`/`) highlighting background, case problem, step-by-step pipeline, and animated technology stack.
-  - **Restricted Admin Portal** (`/login`) with cryptographic session cookies preventing unauthorized access when deployed publicly online.
-  - Interactive **Enterprise Dashboard** (`/dashboard`) with seamless 4-tab workflow.
+  - Interactive **Enterprise Dashboard** (`/dashboard`) directly accessible online for viewing analytics, charts, and mathematical simulations.
   - Native **Dark & Light Mode** toggle with `localStorage` persistence and Chart.js theme adaptation.
   - Smooth anchor-link scrolling with sticky header offset.
 
-- **Admin Authentication & Access Control:**
-  - Zero-dependency session authentication powered by Node's native `node:crypto` (HMAC-SHA256).
-  - Secure HTTP-only cookies (`titan_admin_token`) protecting both page navigation and backend REST API endpoints.
-  - Default Evaluator Credentials:
-    - **Username:** `admin`
-    - **Password:** `admin123`
-    - *(Configurable in production via `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables)*.
-  - One-click Admin Logout with instant session revocation.
+- **Authorized Passkey / PIN Protected Database Tab:**
+  - Public visitors can freely explore all 3 Business Analytics tiers (Descriptive, Predictive, Prescriptive).
+  - Tab 4 (Database Management) is safeguarded behind a security PIN gate to prevent unauthorized tampering or deletion of database records when deployed online.
+  - Cryptographic session token verification powered by Node's native `node:crypto` (HMAC-SHA256).
+  - Default Authorized Access PIN: **`2026`** *(Configurable in production via `DB_PASSKEY` environment variable)*.
+  - Re-lock button and session timeout protection.
 
 - **3-Tier Business Analytics Pipeline:**
   - **Tier 1 — Descriptive:** 6 enterprise KPIs + Spend by Hub (Bar), Carrier Contract Allocation (Doughnut), Monthly Expenditure Trend (Line), and Carrier Delay vs. Transit comparison.
@@ -192,9 +189,8 @@ This project has **zero external binary dependencies** and uses pure JavaScript 
    - **Build Command:** `npm install`
    - **Start Command:** `npm start`
 5. Under **Environment Variables** (optional):
-   - `ADMIN_USERNAME`: your custom admin username (defaults to `admin`)
-   - `ADMIN_PASSWORD`: your secure password (defaults to `admin123`)
-   - `SESSION_SECRET`: a random long string for cryptographic signing
+   - `DB_PASSKEY`: your custom PIN/passkey for unlocking the Database tab (defaults to `2026`)
+   - `PIN_SECRET`: a random long string for cryptographic token signing
 6. Click **Deploy Web Service** &mdash; your app will be live with free automatic HTTPS!
 
 ---
