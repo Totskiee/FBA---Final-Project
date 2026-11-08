@@ -46,14 +46,29 @@ exports.insertRecord = (req, res) => {
     return res.status(400).json({ success: false, error: 'Invalid table requested' });
   }
 
+  const pk = PRIMARY_KEYS[tableName];
   try {
-    const keys = Object.keys(req.body);
-    const values = Object.values(req.body);
+    const payload = { ...req.body };
+
+    // Calculate next consecutive ID based on current MAX ID in the table
+    if (!payload[pk]) {
+      const maxRow = db.prepare(`SELECT COALESCE(MAX(${pk}), 0) as maxId FROM ${tableName}`).get();
+      const nextId = (maxRow ? maxRow.maxId : 0) + 1;
+      payload[pk] = nextId;
+    }
+
+    const keys = Object.keys(payload);
+    const values = Object.values(payload);
     const placeholders = keys.map(() => '?').join(', ');
     const sql = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${placeholders})`;
 
     db.prepare(sql).run(...values);
-    res.json({ success: true, message: `Successfully inserted record into ${tableName}` });
+
+    // Keep sqlite_sequence synchronized with current MAX ID
+    const maxRow = db.prepare(`SELECT COALESCE(MAX(${pk}), 0) as maxId FROM ${tableName}`).get();
+    db.prepare(`UPDATE sqlite_sequence SET seq = ? WHERE name = ?`).run(maxRow.maxId, tableName);
+
+    res.json({ success: true, message: `Successfully inserted record #${payload[pk]} into ${tableName}`, id: payload[pk] });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -89,6 +104,12 @@ exports.deleteRecord = (req, res) => {
   try {
     const sql = `DELETE FROM ${tableName} WHERE ${pk} = ?`;
     db.prepare(sql).run(id);
+
+    // Synchronize sqlite_sequence to the new MAX ID so future inserts continue consecutively without gaps
+    const maxRow = db.prepare(`SELECT COALESCE(MAX(${pk}), 0) as maxId FROM ${tableName}`).get();
+    const currentMax = maxRow ? maxRow.maxId : 0;
+    db.prepare(`UPDATE sqlite_sequence SET seq = ? WHERE name = ?`).run(currentMax, tableName);
+
     res.json({ success: true, message: `Record ${id} deleted from ${tableName}` });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
