@@ -477,15 +477,6 @@ function togglePinVisibility() {
   }
 }
 
-function fillDemoPin() {
-  const pinInput = document.getElementById('db-pin-input');
-  if (pinInput) {
-    pinInput.value = '2026';
-    const err = document.getElementById('db-pin-error');
-    if (err) err.classList.add('hidden');
-  }
-}
-
 async function submitDbPin() {
   const pinInput = document.getElementById('db-pin-input');
   const errDiv = document.getElementById('db-pin-error');
