@@ -1,0 +1,52 @@
+/* Sleek Modern Enterprise Analytics Theme (Light & Dark Mode) */
+
+html {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Light Mode Defaults */
+body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Dark Mode Overrides */
+html.dark body {
+  background-color: #0b0f19;
+  color: #f8fafc;
+}
+
+/* Navigation active tab */
+.nav-tab.tab-active {
+  border-bottom: 3px solid #38bdf8;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

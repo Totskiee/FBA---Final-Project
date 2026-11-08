@@ -1,0 +1,17 @@
+{
+  "name": "titanmotor-logistics-analytics",
+  "version": "1.0.0",
+  "description": "TitanMotor Freight & Logistics - Business Analytics & Database Integration System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node models/seeder.js"
+  },
+  "keywords": ["business-analytics", "logistics", "optimization", "clean-architecture"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}

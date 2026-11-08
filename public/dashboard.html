@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TitanMotor Logistics | Enterprise Analytics & Optimization</title>
+  <!-- Tailwind CSS CDN with Dark Mode configured -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkbg: '#0b0f19',
+            darkcard: '#111827',
+            darkborder: '#1f2937'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="bg-slate-900 dark:bg-[#080c14] text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3.5">
+        <a href="/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-500 text-white flex items-center justify-center text-xl font-black shadow-md shadow-sky-900/40 hover:scale-105 transition-transform" title="Return to Landing Page">
+          <i class="fa-solid fa-truck-fast"></i>
+        </a>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            TitanMotor Logistics
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full">Dashboard</span>
+          </h1>
+          <p class="text-xs text-slate-400">Freight Cost Optimization & Business Analytics System</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 text-xs">
+        <!-- Return to Home Link -->
+        <a href="/" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition font-medium">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Company Overview</span>
+        </a>
+
+        <!-- Live Status Pill -->
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span> SQLite Live
+        </span>
+
+        <!-- Dark / Light Mode Switcher Pill -->
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-all cursor-pointer font-medium" title="Toggle Dark/Light Mode">
+          <i id="theme-toggle-icon" class="fa-solid fa-moon text-sky-300"></i>
+          <span id="theme-toggle-label" class="text-xs">Dark</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-slate-950/60 dark:bg-black/40 border-t border-slate-800 px-4 sm:px-8">
+      <div class="max-w-7xl mx-auto flex space-x-1 sm:space-x-8 overflow-x-auto text-sm py-1.5">
+        <button onclick="switchTab('descriptive')" id="tab-btn-descriptive" class="nav-tab px-3.5 py-2 text-white hover:text-sky-300 flex items-center gap-2 tab-active transition rounded-t-lg">
+          <i class="fa-solid fa-chart-pie"></i> 1. Descriptive Analytics
+        </button>
+        <button onclick="switchTab('predictive')" id="tab-btn-predictive" class="nav-tab px-3.5 py-2 text-slate-400 hover:text-white flex items-center gap-2 transition rounded-t-lg">
+          <i class="fa-solid fa-brain"></i> 2. Predictive Analytics
+        </button>
+        <button onclick="switchTab('prescriptive')" id="tab-btn-prescriptive" class="nav-tab px-3.5 py-2 text-slate-400 hover:text-white flex items-center gap-2 transition rounded-t-lg">
+          <i class="fa-solid fa-bullseye"></i> 3. Prescriptive Analytics
+        </button>
+        <button onclick="switchTab('database')" id="tab-btn-database" class="nav-tab px-3.5 py-2 text-slate-400 hover:text-white flex items-center gap-2 transition rounded-t-lg">
+          <i class="fa-solid fa-database"></i> 4. Database CRUD (5 Tables)
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- System Problem Banner -->
+    <div class="bg-white dark:bg-slate-900 border-l-4 border-sky-600 p-4 mb-6 rounded-r-xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xs font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-info"></i> Core Objective: Minimize Motor Shipping Costs
+        </h2>
+        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+          TitanMotor manufactures heavy industrial electric motors. The platform analyzes historical shipments, forecasts freight expenses using regression modeling, and solves a constrained transportation optimization problem to schedule deliveries at the lowest possible cost.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
+        <i class="fa-solid fa-circle-nodes text-sky-600 dark:text-sky-400"></i> Step-wise BA Pipeline
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: DESCRIPTIVE ANALYTICS -->
+    <!-- ======================================================== -->
+    <div id="tab-descriptive" class="tab-content space-y-6">
+      
+      <!-- KPI Row -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Freight Spend</div>
+          <div id="kpi-total-cost" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Loading...</div>
+          <div class="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 font-medium"><i class="fa-solid fa-wallet"></i> 6-Month Window</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Shipments</div>
+          <div id="kpi-total-shipments" class="text-xl font-bold text-slate-900 dark:text-white mt-1">--</div>
+          <div class="text-[11px] text-sky-600 dark:text-sky-400 mt-1 font-medium"><i class="fa-solid fa-box"></i> Across 50 Hubs</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Motors Shipped</div>
+          <div id="kpi-total-units" class="text-xl font-bold text-slate-900 dark:text-white mt-1">--</div>
+          <div class="text-[11px] text-indigo-600 dark:text-indigo-400 mt-1 font-medium"><i class="fa-solid fa-bolt"></i> Units Delivered</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg Cost / Shipment</div>
+          <div id="kpi-avg-cost" class="text-xl font-bold text-slate-900 dark:text-white mt-1">--</div>
+          <div class="text-[11px] text-amber-600 dark:text-amber-400 mt-1 font-medium"><i class="fa-solid fa-tag"></i> Per Dispatch</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg Transit Time</div>
+          <div id="kpi-avg-transit" class="text-xl font-bold text-slate-900 dark:text-white mt-1">--</div>
+          <div class="text-[11px] text-cyan-600 dark:text-cyan-400 mt-1 font-medium"><i class="fa-solid fa-clock"></i> Days in Transit</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Transit Delay Rate</div>
+          <div id="kpi-delay-rate" class="text-xl font-bold text-rose-600 dark:text-rose-400 mt-1">--</div>
+          <div class="text-[11px] text-rose-500 mt-1 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Lane Bottleneck</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white text-sm">Freight Cost & Inflow by Top Destination Hubs</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Total freight spend distributed across client assembly plants</p>
+            </div>
+            <span class="text-xs bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-semibold px-2.5 py-1 rounded-md border border-sky-100 dark:border-sky-800">Bar Chart</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chartDestinationCosts"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white text-sm">Carrier Volume & Spend Allocation</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Distribution of freight contracts among transport carriers</p>
+            </div>
+            <span class="text-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold px-2.5 py-1 rounded-md border border-indigo-100 dark:border-indigo-800">Doughnut</span>
+          </div>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="chartCarrierShare"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white text-sm">Monthly Freight Expenditure Trends</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Historical monthly costs over the 6-month tracking window</p>
+            </div>
+            <span class="text-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold px-2.5 py-1 rounded-md border border-emerald-100 dark:border-emerald-800">Line Chart</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chartMonthlyTrend"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white text-sm">Carrier Delay Percentage vs. Average Transit Days</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Service reliability comparison among logistics vendors</p>
+            </div>
+            <span class="text-xs bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-semibold px-2.5 py-1 rounded-md border border-amber-100 dark:border-amber-800">Comparison</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chartCarrierDelays"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: PREDICTIVE ANALYTICS -->
+    <!-- ======================================================== -->
+    <div id="tab-predictive" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: What-If Parameter Controls -->
+        <div class="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
+          <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 class="font-bold text-slate-800 dark:text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-sky-600 dark:text-sky-400"></i> What-If Scenario Estimator
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Adjust parameters to forecast shipping costs and transit lead times.</p>
+          </div>
+
+          <form id="prediction-form" class="space-y-4" onsubmit="event.preventDefault(); calculatePrediction();">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Origin Warehouse</label>
+              <select id="pred-warehouse" class="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"></select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Destination Customer Hub</label>
+              <select id="pred-hub" class="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"></select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Motor Product Model</label>
+              <select id="pred-product" class="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"></select>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase">Quantity of Motors</label>
+                <span id="units-val" class="text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded border border-sky-100 dark:border-sky-800">35 units</span>
+              </div>
+              <input type="range" id="pred-units" min="5" max="150" value="35" class="w-full accent-sky-600 cursor-pointer" oninput="document.getElementById('units-val').innerText = this.value + ' units'">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Logistics Carrier</label>
+              <select id="pred-carrier" class="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none">
+                <option value="Titan Logistics Fleet">Titan Logistics Fleet (Internal - Low Cost)</option>
+                <option value="SwiftFreight Express">SwiftFreight Express (Fast / Premium)</option>
+                <option value="NationalRail Cargo">NationalRail Cargo (Heavy Freight / Rail)</option>
+                <option value="ApexHaul Trucking">ApexHaul Trucking (Regional Haul)</option>
+                <option value="TransCoast Freight">TransCoast Freight (Interstate Express)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-calculator"></i> Run Predictive Forecast
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Prediction Output & Model Metrics -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-xl shadow-md border border-slate-700">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+              <div>
+                <span class="text-xs uppercase tracking-wider text-sky-400 font-bold">Predicted Freight Valuation</span>
+                <h4 id="pred-headline" class="text-lg font-bold text-white">Configure shipment parameters to simulate</h4>
+              </div>
+              <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full font-bold">
+                Regression Active
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5">
+              <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                <div class="text-xs text-slate-400">Total Freight Cost</div>
+                <div id="pred-total-cost" class="text-2xl font-black text-sky-400 mt-1">$0.00</div>
+              </div>
+              <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                <div class="text-xs text-slate-400">Cost / Motor Unit</div>
+                <div id="pred-unit-cost" class="text-2xl font-black text-white mt-1">$0.00</div>
+              </div>
+              <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                <div class="text-xs text-slate-400">Estimated Transit</div>
+                <div id="pred-transit-days" class="text-2xl font-black text-amber-300 mt-1">-- Days</div>
+              </div>
+              <div class="bg-white/5 p-3.5 rounded-lg border border-white/10">
+                <div class="text-xs text-slate-400">Delay Risk Level</div>
+                <div id="pred-delay-risk" class="text-2xl font-black text-emerald-400 mt-1">-- %</div>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-700/60 text-xs text-slate-400 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>Total Cargo Weight: <span id="pred-weight" class="font-bold text-white">-- kg</span></div>
+              <div>Estimated Distance: <span id="pred-distance" class="font-bold text-white">-- km</span></div>
+              <div>Handling Fee: <span id="pred-handling" class="font-bold text-white">$0.00</span></div>
+              <div>Cost per Kg: <span id="pred-cost-kg" class="font-bold text-white">$0.00 / kg</span></div>
+            </div>
+          </div>
+
+          <!-- Statistical Model Explanation -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+            <h4 class="font-bold text-slate-800 dark:text-white text-sm mb-2 flex items-center gap-2">
+              <i class="fa-solid fa-square-root-variable text-indigo-600 dark:text-indigo-400"></i> Multiple Linear Regression Model Formulation
+            </h4>
+            <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-800 dark:text-slate-200 mb-4">
+              $$\text{Freight Cost} = \left( 185.40 + 0.078 \times \text{CargoWeight (kg)} + 1.12 \times \text{Distance (km)} \right) \times \text{CarrierFactor} + \text{HandlingFee}$$
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div class="p-3.5 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 rounded-xl">
+                <div class="text-indigo-800 dark:text-indigo-300 font-bold">Goodness of Fit</div>
+                <div class="text-xl font-black text-indigo-950 dark:text-indigo-100 mt-1">R² = 0.924</div>
+                <div class="text-slate-500 dark:text-slate-400 mt-0.5">High explanatory power on variance</div>
+              </div>
+              <div class="p-3.5 bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60 rounded-xl">
+                <div class="text-emerald-800 dark:text-emerald-300 font-bold">Mean Absolute Error (MAE)</div>
+                <div class="text-xl font-black text-emerald-950 dark:text-emerald-100 mt-1">± $46.80 USD</div>
+                <div class="text-slate-500 dark:text-slate-400 mt-0.5">Average dispatch cost variance</div>
+              </div>
+              <div class="p-3.5 bg-sky-50/70 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60 rounded-xl">
+                <div class="text-sky-800 dark:text-sky-300 font-bold">Training Dataset</div>
+                <div class="text-xl font-black text-sky-950 dark:text-sky-100 mt-1">120 Transactions</div>
+                <div class="text-slate-500 dark:text-slate-400 mt-0.5">Trained on 50 warehouses & routes</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: PRESCRIPTIVE ANALYTICS -->
+    <!-- ======================================================== -->
+    <div id="tab-prescriptive" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+        <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-150 dark:border-slate-800 pb-4 gap-4">
+          <div>
+            <span class="text-xs font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">Optimization Result</span>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Linear Programming Transportation Model Solution</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Mathematically minimizes freight costs while satisfying warehouse supplies and customer hub demands.</p>
+          </div>
+          <button onclick="initPrescriptiveDashboard()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2 self-start md:self-auto cursor-pointer">
+            <i class="fa-solid fa-arrows-rotate"></i> Re-solve Optimization
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+          <div class="bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 p-5 rounded-xl">
+            <div class="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wide">Historical Unoptimized Cost</div>
+            <div id="presc-baseline-cost" class="text-2xl font-black text-rose-900 dark:text-rose-200 mt-1.5">$84,520.00</div>
+            <div class="text-xs text-rose-600 dark:text-rose-400 mt-1">Ad-hoc dispatch decisions</div>
+          </div>
+          <div class="bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 p-5 rounded-xl">
+            <div class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">Optimal Prescribed Cost</div>
+            <div id="presc-optimal-cost" class="text-2xl font-black text-emerald-900 dark:text-emerald-200 mt-1.5">$70,840.00</div>
+            <div class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Mathematical minimum solution</div>
+          </div>
+          <div class="bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/60 p-5 rounded-xl">
+            <div class="text-xs font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wide">Total Net Savings</div>
+            <div id="presc-savings" class="text-2xl font-black text-sky-900 dark:text-sky-200 mt-1.5">$13,680.00 (16.2%)</div>
+            <div class="text-xs text-sky-600 dark:text-sky-400 mt-1">Direct bottom-line improvement</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optimal Shipping Distribution Matrix -->
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+        <h4 class="font-bold text-slate-800 dark:text-white text-sm mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-table-cells text-sky-600 dark:text-sky-400"></i> Optimal Warehouse-to-Hub Shipping Allocation Matrix (Units Shipped)
+        </h4>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Values represent recommended motor units shipped. Bracketed numbers [c_ij] indicate unit shipping cost.</p>
+
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-lg">
+          <table class="min-w-full text-xs text-center border-collapse">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                <th class="p-3 text-left">Origin Warehouse</th>
+                <th class="p-3">Atlanta Hub<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: 380</span></th>
+                <th class="p-3">Detroit Plant<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: 450</span></th>
+                <th class="p-3">Houston Facility<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: 420</span></th>
+                <th class="p-3">Denver Center<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: 350</span></th>
+                <th class="p-3">Phoenix Park<br><span class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Demand: 400</span></th>
+                <th class="p-3 bg-slate-100 dark:bg-slate-750 text-slate-800 dark:text-slate-200">Total Supply</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-tbody" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Actionable Dispatch Directives -->
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+        <h4 class="font-bold text-slate-800 dark:text-white text-sm mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-route text-emerald-600 dark:text-emerald-400"></i> Prescribed Route Dispatch Schedule (Implementation Directives)
+        </h4>
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-lg">
+          <table class="min-w-full text-xs text-left">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                <th class="p-3">Origin Facility</th>
+                <th class="p-3">Destination Hub</th>
+                <th class="p-3">Recommended Units</th>
+                <th class="p-3">Unit Freight Rate</th>
+                <th class="p-3">Total Route Freight</th>
+                <th class="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="prescriptive-routes-tbody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: DATABASE CRUD MANAGEMENT (5 TABLES) -->
+    <!-- ======================================================== -->
+    <div id="tab-database" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-150 dark:border-slate-800 pb-4 gap-4">
+          <div>
+            <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-database text-sky-600 dark:text-sky-400"></i> Relational Database Viewer & CRUD Operations
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Explore, search, edit, and delete records across all 5 database entities (50+ records each).</p>
+          </div>
+          <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+            <i class="fa-solid fa-plus"></i> Add New Record
+          </button>
+        </div>
+
+        <!-- Table Selector Buttons -->
+        <div class="flex flex-wrap gap-2.5 mt-4" id="table-switcher">
+          <button onclick="loadTable('warehouses')" class="table-btn px-3.5 py-1.5 text-xs font-bold rounded-lg bg-sky-600 text-white shadow-sm" data-table="warehouses">
+            1. Warehouses (50)
+          </button>
+          <button onclick="loadTable('customer_hubs')" class="table-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700" data-table="customer_hubs">
+            2. Customer Hubs (50)
+          </button>
+          <button onclick="loadTable('motor_products')" class="table-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700" data-table="motor_products">
+            3. Motor Products (50)
+          </button>
+          <button onclick="loadTable('carriers_routes')" class="table-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700" data-table="carriers_routes">
+            4. Carriers & Routes (50)
+          </button>
+          <button onclick="loadTable('shipment_transactions')" class="table-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700" data-table="shipment_transactions">
+            5. Shipments (120)
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mt-4 flex items-center gap-3">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </span>
+            <input type="text" id="db-search" oninput="filterTableData()" placeholder="Filter and search records..." class="w-full text-xs pl-8 pr-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none">
+          </div>
+          <span id="record-count-badge" class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+            Showing records
+          </span>
+        </div>
+
+        <!-- Table Display -->
+        <div class="mt-4 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl max-h-96 overflow-y-auto">
+          <table class="min-w-full text-xs text-left divide-y divide-slate-200 dark:divide-slate-800" id="crud-table">
+            <thead class="bg-slate-50 dark:bg-slate-800/90 sticky top-0 z-10 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider" id="crud-thead"></thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900" id="crud-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add Record Modal -->
+  <div id="add-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 class="font-bold text-slate-800 dark:text-white text-sm" id="modal-title">Add New Record</h3>
+        <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+      <form id="add-record-form" onsubmit="event.preventDefault(); submitAddRecord();" class="space-y-3">
+        <div id="modal-form-fields" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white rounded-lg shadow-sm cursor-pointer">Insert Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Record Modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 class="font-bold text-slate-800 dark:text-white text-sm" id="edit-modal-title">Edit Record</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+      <form id="edit-record-form" onsubmit="event.preventDefault(); submitEditRecord();" class="space-y-3">
+        <div id="edit-modal-fields" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-sm cursor-pointer">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-[#080c14] border-t border-slate-200 dark:border-slate-800 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+      TitanMotor Freight & Logistics Analytics Platform &copy; 2026 | Full-Stack Business Analytics Application
+    </div>
+  </footer>
+
+  <!-- Modular Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
