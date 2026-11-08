@@ -416,3 +416,20 @@ async function deleteRecordPrompt(recordId) {
     alert('Failed to delete record: ' + err.message);
   }
 }
+
+// -------------------------------------------------------------
+// ADMIN LOGOUT HANDLER
+// -------------------------------------------------------------
+async function handleLogout() {
+  if (!confirm('Are you sure you want to log out of the Admin Dashboard?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/auth/logout', { method: 'POST' });
+    const data = await response.json();
+    window.location.href = data.redirect || '/login';
+  } catch (err) {
+    window.location.href = '/login';
+  }
+}

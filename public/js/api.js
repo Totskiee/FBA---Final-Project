@@ -1,56 +1,58 @@
 // API Client Service
 const API = {
-  async getDescriptiveSummary() {
-    const res = await fetch('/api/descriptive/summary');
+  async _fetch(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+      // Session expired or unauthorized, redirect to login
+      window.location.href = '/login';
+      return { success: false, error: 'Unauthorized: Admin session required' };
+    }
     return res.json();
+  },
+
+  async getDescriptiveSummary() {
+    return this._fetch('/api/descriptive/summary');
   },
 
   async getPredictiveEstimate(payload) {
-    const res = await fetch('/api/predictive/estimate', {
+    return this._fetch('/api/predictive/estimate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    return res.json();
   },
 
   async getPrescriptiveOptimization() {
-    const res = await fetch('/api/prescriptive/optimize');
-    return res.json();
+    return this._fetch('/api/prescriptive/optimize');
   },
 
   async getTableList() {
-    const res = await fetch('/api/db/tables');
-    return res.json();
+    return this._fetch('/api/db/tables');
   },
 
   async getTableRows(tableName, limit = 100) {
-    const res = await fetch(`/api/db/${tableName}?limit=${limit}`);
-    return res.json();
+    return this._fetch(`/api/db/${tableName}?limit=${limit}`);
   },
 
   async insertTableRow(tableName, payload) {
-    const res = await fetch(`/api/db/${tableName}`, {
+    return this._fetch(`/api/db/${tableName}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    return res.json();
   },
 
   async updateTableRow(tableName, id, payload) {
-    const res = await fetch(`/api/db/${tableName}/${id}`, {
+    return this._fetch(`/api/db/${tableName}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    return res.json();
   },
 
   async deleteTableRow(tableName, id) {
-    const res = await fetch(`/api/db/${tableName}/${id}`, {
+    return this._fetch(`/api/db/${tableName}/${id}`, {
       method: 'DELETE'
     });
-    return res.json();
   }
 };

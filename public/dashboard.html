@@ -45,22 +45,34 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-3 text-xs">
+      <div class="flex items-center space-x-2.5 text-xs">
         <!-- Return to Home Link -->
         <a href="/" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition font-medium">
           <i class="fa-solid fa-arrow-left text-[10px]"></i>
-          <span>Company Overview</span>
+          <span class="hidden sm:inline">Overview</span>
         </a>
 
         <!-- Live Status Pill -->
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span> SQLite Live
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> SQLite Live
+        </span>
+
+        <!-- Admin Session Badge -->
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm">
+          <i class="fa-solid fa-user-shield text-[10px]"></i>
+          <span>Admin</span>
         </span>
 
         <!-- Dark / Light Mode Switcher Pill -->
-        <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-all cursor-pointer font-medium" title="Toggle Dark/Light Mode">
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-sm transition-all cursor-pointer font-medium" title="Toggle Dark/Light Mode">
           <i id="theme-toggle-icon" class="fa-solid fa-moon text-sky-300"></i>
           <span id="theme-toggle-label" class="text-xs">Dark</span>
+        </button>
+
+        <!-- Admin Logout Button -->
+        <button onclick="handleLogout()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 shadow-sm transition font-medium cursor-pointer" title="Log Out">
+          <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
+          <span class="hidden sm:inline">Logout</span>
         </button>
       </div>
     </div>
