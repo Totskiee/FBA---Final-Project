@@ -29,9 +29,12 @@ FBA - Final Project/
 │   ├── predictiveRoutes.js       # Routes for /api/predictive/*
 │   ├── prescriptiveRoutes.js     # Routes for /api/prescriptive/*
 │   └── databaseRoutes.js         # Routes for /api/db/*
+├── middlewares/
+│   └── dbAuthMiddleware.js       # PIN authorization check for /api/db/*
 ├── services/
 │   ├── regressionService.js      # Multi-variable regression modeling & metrics
-│   └── optimizationService.js    # Transportation linear programming algorithm
+│   ├── optimizationService.js    # Transportation linear programming algorithm
+│   └── pinService.js             # Security PIN verification & token generation
 ├── models/
 │   └── seeder.js                 # Seeding script (50+ rows across 5 tables)
 ├── public/
